@@ -26,6 +26,7 @@ const dbUrl = "mongodb://localhost:27017";
 app.set('dbUrl', dbUrl);
 
 require('./user.model');
+require('./book.model');
 
 const userModel = mongoose.model('user');
 
@@ -56,7 +57,7 @@ passport.use('local',
             if(!user || err) return done("cannot get user", false);
             user.comparePasswords(password, function(err, isMatch) {
                 if(err || !isMatch) return done("password incorrect", false);
-                return done(null, user.username);
+                return done(null, user);
             });
         });
     }));

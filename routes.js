@@ -19,12 +19,23 @@ router.post('/register', function(req, res) {
 
 router.get('/', function(req, res) {
     console.log("Query parameterek", req.query);
+    console.log(req.session.passport.user);
     if(req.isAuthenticated()) {
         return res.status(200).send("Hello World");
     } else {
         return res.status(403).send("You are not welcome here");
     }
 });
+
+router.get('/users', function(req, res) {
+    if(req.isAuthenticated() && req.session.passport.user.username === "admin") {
+        userModel.find({}, function(err, users) {
+            return res.status(200).send(users);
+        })
+    } else {
+        return res.status(403).send("Unauthorized access");
+    }
+})
 
 router.post('/logout', function(req, res) {
     if(req.isAuthenticated()) {
