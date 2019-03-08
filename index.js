@@ -25,6 +25,10 @@ const dbUrl = "mongodb://localhost:27017";
 
 app.set('dbUrl', dbUrl);
 
+require('./user.model');
+
+const userModel = mongoose.model('user');
+
 mongoose.connect(dbUrl);
 
 mongoose.connection.on('connected', function() {
@@ -34,7 +38,6 @@ mongoose.connection.on('connected', function() {
 mongoose.connection.on('error', function() {
     console.log('db connection error');
 });
-
 
 
 passport.serializeUser(function(user, done) {
@@ -49,11 +52,13 @@ passport.deserializeUser(function(user, done) {
 
 passport.use('local', 
     new localStrategy(function(username, password, done) {
-        if(username === 'user' && password === '12345') {
-            return done(null, username);
-        } else {
-            return done("Wrong username/password", null);
-        }
+        userModel.findOne({username: username}, function(err, user) {
+            if(!user || err) return done("cannot get user", false);
+            user.comparePasswords(password, function(err, isMatch) {
+                if(err || !isMatch) return done("password incorrect", false);
+                return done(null, user.username);
+            });
+        });
     }));
 
 app.use(bodyParser.urlencoded({extended: true}));
