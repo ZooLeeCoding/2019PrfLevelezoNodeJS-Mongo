@@ -18,6 +18,7 @@ const expressSession = require('express-session');
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 // docker run -d -p 27017:27017 -v $PWD/mongo:/etc/mongo --name mymongo mongo
 
@@ -65,6 +66,8 @@ passport.use('local',
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+app.use(cors());
 
 app.use(expressSession({secret: '12354456462almajjimnhgiknb,'}));
 app.use(passport.initialize());
